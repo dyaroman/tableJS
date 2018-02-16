@@ -1,0 +1,44 @@
+table {
+    border-collapse: collapse;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+td, th {
+    padding-top: 3px;
+    padding-right: 20px;
+    padding-left: 5px;
+    padding-bottom: 3px;
+    font-family: monospace;
+    border: 1px solid #000;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+th:hover {
+    cursor: pointer;
+}
+
+.active {
+    position: relative;
+    background-color: #ccc;
+}
+.active:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    margin-top: -5px;
+    right: 5px;
+    display: block;
+    width: 0;
+    height: 0;
+    border-bottom: 10px solid #fff;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    transition: transform 0.3s ease;
+}
+.active--revert:after {
+    transform: rotate(180deg);
+}
