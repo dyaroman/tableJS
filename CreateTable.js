@@ -1,6 +1,7 @@
 class CreateTable {
     constructor(rowsAmount) {
         this.users = [];
+        this.destroyTable();
         this.receiveData(rowsAmount);
     }
 
@@ -76,8 +77,18 @@ class CreateTable {
 
         return strArr;
     }
+
+    destroyTable() {
+        const table = document.querySelector('table');
+        if (table) {
+            table.remove();
+            console.log('table -- deleted');
+            return true;
+        }
+        return false;
+    }
 }
 
-// const createUsersTable = new CreateTable(100);
+const createTestTable = new CreateTable(100);
 
-console.log(`new CreateTable(100)`);
+console.log(`new CreateTable(number)`);
