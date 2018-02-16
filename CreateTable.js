@@ -1,7 +1,7 @@
 class CreateTable {
-    constructor(obj) {
+    constructor(rowsAmount) {
         this.users = [];
-        this.receiveData(obj.rowsAmount);
+        this.receiveData(rowsAmount);
     }
 
     receiveData(usersAmount) {
@@ -78,6 +78,6 @@ class CreateTable {
     }
 }
 
-// const createUsersTable = new CreateTable({
-//     rowsAmount: 100
-// });
+// const createUsersTable = new CreateTable(100);
+
+console.log(`new CreateTable(100)`);
