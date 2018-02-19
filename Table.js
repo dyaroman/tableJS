@@ -1,4 +1,4 @@
-class CreateTable {
+class Table {
     constructor(rowsAmount) {
         if (typeof rowsAmount !== 'number') {
             throw new Error('type of argument must be a number');
@@ -97,6 +97,6 @@ class CreateTable {
     }
 }
 
-new CreateTable(50);
+new Table(50);
 
-console.log(`new CreateTable(number)`);
+console.log(`new Table(number)`);

@@ -3,7 +3,7 @@
 You can see example [here](https://dyaroman.github.io/tableJS/index.html)
 
 ```javascript
-new CreateTable(number)
+new Table(number)
 ```
 
 `number` - amount of users in the table

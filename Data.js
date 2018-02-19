@@ -1,4 +1,4 @@
-class SortTable {
+class Data {
     constructor(el) {
         this.el = el;
         this.checkClick();
@@ -78,5 +78,5 @@ class SortTable {
 }
 
 window.addEventListener('tableCreated', () => {
-    new SortTable(document.querySelector('table'));
+    new Data(document.querySelector('table'));
 });
