@@ -3,98 +3,125 @@ class Table {
         if (typeof rowsAmount !== 'number') {
             throw new Error('type of argument must be a number');
         }
+        this.isAlive = false;
+        this.el = null;
         this.users = [];
-        this.destroyTable();
-        this.receiveData(rowsAmount);
+        tableData.receive(rowsAmount);
     }
 
-    receiveData(usersAmount) {
-        const amount = usersAmount > 1 ? usersAmount : 1;
-        const url = `https://randomuser.me/api/?nat=US&results=${amount}`;
-
-        fetch(url)
-            .then(res => res.json())
-            .then(data => data.results)
-            .then(results => {
-                this.users = results.map((user, index) => {
-                    return {
-                        id: index,
-                        first: user.name.first,
-                        last: user.name.last,
-                        gender: user.gender,
-                        phone: user.cell,
-                        email: user.email,
-                        city: user.location.city,
-                        state: user.location.state,
-                        postcode: user.location.postcode,
-                    }
-                });
-            }).then(() => this.createTable());
-    }
-
-    createTable() {
+    create() {
+        if (this.isAlive) {
+            this.destroy();
+        }
         const table = document.createElement('table');
-        let tableHead = '';
-        let tableRows = '';
 
-        for (let key in this.users[0]) {
-            let type = 'string';
+        table.innerHTML += this.assembleHead(this.users);
+        table.innerHTML += this.assembleBody(this.users);
 
-            if (key === 'phone' || key === 'postcode' || key === 'id') {
-                type = 'number';
-            }
+        document.body.appendChild(table);
 
-            tableHead += `<th data-sort-by=${type}>${this.capitalizeKey(key)}</th>`;
+        console.log('table created');
+
+        this.isAlive = true;
+        this.el = table;
+        this.clickHandler();
+    }
+
+    update(tableEl, newData) {
+        if (!this.isAlive) {
+            throw new Error(`can not update table, table alive status = ${this.isAlive}`);
         }
 
-        table.innerHTML = `<thead><tr>${tableHead}</tr></thead>`;
+        const newTbody = document.createElement('tbody');
 
+        // remove table body
+        tableEl.querySelector('tbody').remove();
 
-        this.users.forEach((user) => {
+        // fill table body with sorted rows
+        newTbody.innerHTML += this.assembleBody(newData);
+
+        // append new table body to the table
+        tableEl.appendChild(newTbody);
+    }
+
+    assembleHead(usersArray) {
+        let tableHead = '';
+
+        for (let key in usersArray[0]) {
+            let type = 'string';
+
+            if (key === 'phone') {
+                type = 'number';
+            }
+            if (usersArray[0].hasOwnProperty(key)) {
+                tableHead += `<th data-sort-by=${type}>${helpers.capitalizeStr(key)}</th>`;
+            }
+        }
+
+        return `<thead><tr>${tableHead}</tr></thead>`;
+    }
+
+    assembleBody(usersArray) {
+        let tableRows = '';
+
+        usersArray.forEach((user) => {
             let userCells = '';
 
             for (let prop in user) {
                 if (user.hasOwnProperty(prop)) {
-                    userCells += `<td>${this.capitalizeKey(user[prop])}</td>`;
+                    userCells += `<td>${helpers.capitalizeStr(user[prop])}</td>`;
                 }
             }
 
             tableRows += `<tr>${userCells}</tr>`;
         });
 
-        table.innerHTML += `<tbody>${tableRows}</tbody>`;
-
-        document.body.appendChild(table);
-
-        const tableEvent = new CustomEvent('tableCreated');
-        window.dispatchEvent(tableEvent);
+        return `<tbody>${tableRows}</tbody>`;
     }
 
-    capitalizeKey(str) {
-        if (typeof str !== 'string' || RegExp('@').test(str)) {
-            return str;
-        }
+    clickHandler() {
+        this.el.addEventListener('click', (e) => {
+            if (e.target.nodeName !== 'TH') {
+                return;
+            }
 
-        let strArr = str.split(' ');
-        strArr = strArr.map((item) => {
-            return item.charAt(0).toUpperCase() + item.slice(1);
+            let direction = true;
+            const th = this.el.querySelectorAll('th');
+            for (let i = 0; i < th.length; i++) {
+                th[i].classList.remove('active');
+            }
+            e.target.classList.add('active');
+
+            if (e.target.classList.contains('active--revert')) {
+                e.target.classList.remove('active--revert');
+                direction = false;
+            } else {
+                e.target.classList.add('active--revert');
+            }
+
+            const sortBy = e.target.getAttribute('data-sort-by').toLowerCase();
+            const index = e.target.innerText.toLowerCase();
+
+            this.update(this.el, tableData.sort({
+                table: this.el,
+                sortableArray: this.users,
+                sortBy,
+                index,
+                direction
+            }));
         });
-        strArr = strArr.join(' ');
-
-        return strArr;
     }
 
-    destroyTable() {
+    destroy() {
         const table = document.querySelector('table');
         if (table) {
             table.remove();
-            console.log('table -- deleted');
-            return true;
+            console.log('table deleted');
+            this.isAlive = false;
         }
-        return false;
     }
 }
 
-new Table(50);
+const table = new Table(10);
 
 console.log(`new Table(number)`);

@@ -1,82 +1,50 @@
 class Data {
-    constructor(el) {
-        this.el = el;
-        this.checkClick();
+    receive(usersAmount) {
+        const amount = usersAmount > 1 ? usersAmount : 1;
+        const url = `https://randomuser.me/api/?nat=US&results=${amount}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => data.results)
+            .then(results => {
+                table.users = results.map((user, index) => {
+                    return {
+                        id: index,
+                        first: user.name.first,
+                        last: user.name.last,
+                        gender: user.gender,
+                        phone: user.cell,
+                        email: user.email,
+                        city: user.location.city,
+                        state: user.location.state,
+                        postcode: user.location.postcode,
+                    }
+                });
+            })
+            .then(() => table.create());
     }
 
-    checkClick() {
-        this.el.addEventListener('click', (e) => {
-            if (e.target.nodeName !== 'TH') return;
+    sort(obj) {
+        return obj.sortableArray.sort((a, b) => {
+            let aValue = a[obj.index];
+            let bValue = b[obj.index];
 
-            let direction = true;
-            const th = this.el.querySelectorAll('th');
-            for (let i = 0; i < th.length; i++) {
-                th[i].classList.remove('active');
-            }
-            e.target.classList.add('active');
-
-            if (e.target.classList.contains('active--revert')) {
-                e.target.classList.remove('active--revert');
-                direction = false;
-            } else {
-                e.target.classList.add('active--revert');
-            }
-
-            const sortBy = e.target.getAttribute('data-sort-by').toLowerCase();
-            const index = e.target.cellIndex;
-
-            this.sortTable(sortBy, index, direction);
-        });
-    }
-
-    sortTable(sortBy, index, direction) {
-        const tableRows = this.el.querySelectorAll('tbody tr');
-        const newTbody = document.createElement('tbody');
-        const rowsArr = [];
-
-        // fill array with rows of table
-        for (let i = 0; i < tableRows.length; i++) {
-            rowsArr.push(tableRows[i]);
-        }
-
-        // sort array
-        rowsArr.sort((a, b) => {
-            let aValue = a.children[index].innerText;
-            let bValue = b.children[index].innerText;
-
-            if (sortBy === 'number') {
-                aValue = this.getNumberFromString(aValue);
-                bValue = this.getNumberFromString(bValue);
+            if (obj.sortBy === 'number') {
+                aValue = helpers.getNumberFromString(aValue);
+                bValue = helpers.getNumberFromString(bValue);
             }
 
             if (aValue < bValue) {
-                return direction ? -1 : 1;
+                return obj.direction ? -1 : 1;
             }
 
             if (aValue > bValue) {
-                return direction ? 1 : -1;
+                return obj.direction ? 1 : -1;
             }
 
             return 0;
         });
-
-        // remove table body
-        this.el.querySelector('tbody').remove();
-
-        // fill table body with sorted rows
-        for (let i = 0; i < rowsArr.length; i++) {
-            newTbody.append(rowsArr[i]);
-        }
-
-        // append new table body to the table
-        this.el.appendChild(newTbody);
-    }
-
-    getNumberFromString(str) {
-        return parseInt(str.replace(/[^\/\d]/g, ''));
     }
 }
 
-window.addEventListener('tableCreated', () => {
-    new Data(document.querySelector('table'));
-});
+const tableData = new Data();
