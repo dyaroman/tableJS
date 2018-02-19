@@ -31,14 +31,15 @@ class SortTable {
 
     sortTable(sortBy, index, direction) {
         const tableRows = this.el.querySelectorAll('tbody tr');
+        let newTbody = document.createElement('tbody');
         let rowsArr = [];
 
+        // fill array with rows of table
         for (let i = 0; i < tableRows.length; i++) {
             rowsArr.push(tableRows[i]);
         }
 
-        const rowsArrLength = rowsArr.length;
-
+        // sort array
         rowsArr.sort((a, b) => {
             let aValue = a.children[index].innerText;
             let bValue = b.children[index].innerText;
@@ -59,16 +60,20 @@ class SortTable {
             return 0;
         });
 
-        for (let i = 0; i < rowsArrLength; i++) {
-            tableRows[i].remove();
+        // remove table body
+        this.el.querySelector('tbody').remove();
+
+        // fill table body with sorted rows
+        for (let i = 0; i < rowsArr.length; i++) {
+            newTbody.append(rowsArr[i]);
         }
-        for (let i = 0; i < rowsArrLength; i++) {
-            this.el.querySelector('tbody').append(rowsArr[i]);
-        }
+
+        // append new table body to the table
+        this.el.appendChild(newTbody);
     }
 
     getNumberFromString(str) {
-        return str.replace(/[^\/\d]/g, '');
+        return parseInt(str.replace(/[^\/\d]/g, ''));
     }
 }
 

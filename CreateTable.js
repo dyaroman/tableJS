@@ -1,20 +1,24 @@
 class CreateTable {
     constructor(rowsAmount) {
+        if (typeof rowsAmount !== 'number') {
+            throw new Error('type of argument must be a number');
+        }
         this.users = [];
         this.destroyTable();
         this.receiveData(rowsAmount);
     }
 
     receiveData(usersAmount) {
-        let amount = usersAmount ? usersAmount : 1;
+        let amount = usersAmount > 1 ? usersAmount : 1;
         const url = `https://randomuser.me/api/?nat=US&results=${amount}`;
 
         fetch(url)
             .then(res => res.json())
             .then(data => data.results)
             .then(results => {
-                this.users = results.map(user => {
+                this.users = results.map((user, index) => {
                     return {
+                        id: index,
                         first: user.name.first,
                         last: user.name.last,
                         gender: user.gender,
@@ -33,12 +37,12 @@ class CreateTable {
     createTable() {
         let table = document.createElement('table');
         let tableHead = '';
-        let tableRow = '';
+        let tableRows = '';
 
         for (let key in this.users[0]) {
             let type = 'string';
 
-            if (key === 'phone' || key === 'postcode') {
+            if (key === 'phone' || key === 'postcode' || key === 'id') {
                 type = 'number';
             }
 
@@ -55,10 +59,10 @@ class CreateTable {
                 userCells += `<td>${this.capitalizeKey(user[prop])}</td>`;
             }
 
-            tableRow += `<tr>${userCells}</tr>`;
+            tableRows += `<tr>${userCells}</tr>`;
         });
 
-        table.innerHTML += `<tbody>${tableRow}</tbody>`;
+        table.innerHTML += `<tbody>${tableRows}</tbody>`;
 
         document.body.appendChild(table);
 
@@ -89,6 +93,6 @@ class CreateTable {
     }
 }
 
-const createTestTable = new CreateTable(100);
+new CreateTable(50);
 
 console.log(`new CreateTable(number)`);
