@@ -9,7 +9,7 @@ class SortTable {
             if (e.target.nodeName !== 'TH') return;
 
             let direction = true;
-            let th = this.el.querySelectorAll('th');
+            const th = this.el.querySelectorAll('th');
             for (let i = 0; i < th.length; i++) {
                 th[i].classList.remove('active');
             }
@@ -31,8 +31,8 @@ class SortTable {
 
     sortTable(sortBy, index, direction) {
         const tableRows = this.el.querySelectorAll('tbody tr');
-        let newTbody = document.createElement('tbody');
-        let rowsArr = [];
+        const newTbody = document.createElement('tbody');
+        const rowsArr = [];
 
         // fill array with rows of table
         for (let i = 0; i < tableRows.length; i++) {

@@ -9,7 +9,7 @@ class CreateTable {
     }
 
     receiveData(usersAmount) {
-        let amount = usersAmount > 1 ? usersAmount : 1;
+        const amount = usersAmount > 1 ? usersAmount : 1;
         const url = `https://randomuser.me/api/?nat=US&results=${amount}`;
 
         fetch(url)
@@ -35,7 +35,7 @@ class CreateTable {
     }
 
     createTable() {
-        let table = document.createElement('table');
+        const table = document.createElement('table');
         let tableHead = '';
         let tableRows = '';
 
@@ -56,7 +56,9 @@ class CreateTable {
             let userCells = '';
 
             for (let prop in user) {
-                userCells += `<td>${this.capitalizeKey(user[prop])}</td>`;
+                if (user.hasOwnProperty(prop)) {
+                    userCells += `<td>${this.capitalizeKey(user[prop])}</td>`;
+                }
             }
 
             tableRows += `<tr>${userCells}</tr>`;
@@ -71,7 +73,9 @@ class CreateTable {
     }
 
     capitalizeKey(str) {
-        if (typeof str !== 'string' || RegExp('@').test(str)) return str;
+        if (typeof str !== 'string' || RegExp('@').test(str)) {
+            return str;
+        }
 
         let strArr = str.split(' ');
         strArr = strArr.map((item) => {
