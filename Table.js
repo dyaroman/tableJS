@@ -29,9 +29,7 @@ class Table {
                         postcode: user.location.postcode,
                     }
                 });
-            }).then(() => {
-            this.createTable();
-        });
+            }).then(() => this.createTable());
     }
 
     createTable() {
