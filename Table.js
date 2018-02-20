@@ -3,33 +3,31 @@ class Table {
         if (typeof rowsAmount !== 'number') {
             throw new Error('type of argument must be a number');
         }
-        this.el = null;
+        this.el = document.createElement('table');
+        this.data = new Data(this.el);
 
         const dataRequestEvent = new CustomEvent('dataRequest', {
             detail: rowsAmount
         });
-        window.dispatchEvent(dataRequestEvent);
+        this.el.dispatchEvent(dataRequestEvent);
 
-        window.addEventListener('dataReceived', (e) => {
+        this.el.addEventListener('dataReceived', (e) => {
             this.users = e.detail.data;
             this.create();
         });
 
-        window.addEventListener('arraySorted', (e) => {
+        this.el.addEventListener('arraySorted', (e) => {
             this.update(this.el, e.detail.sortedArray);
         });
 
     }
 
     create() {
-        const table = document.createElement('table');
+        this.el.innerHTML += this.assembleHead(this.users);
+        this.el.innerHTML += this.assembleBody(this.users);
 
-        table.innerHTML += this.assembleHead(this.users);
-        table.innerHTML += this.assembleBody(this.users);
+        document.body.appendChild(this.el);
 
-        document.body.appendChild(table);
-
-        this.el = table;
         this.clickHandler();
     }
 
@@ -102,7 +100,7 @@ class Table {
                     direction
                 }
             });
-            window.dispatchEvent(sortRequestEvent);
+            this.el.dispatchEvent(sortRequestEvent);
         });
     }
 
@@ -116,3 +114,4 @@ class Table {
 }
 
 const table = new Table(10);
+const table2 = new Table(10);

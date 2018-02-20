@@ -1,10 +1,11 @@
 class Data {
-    constructor() {
-        window.addEventListener('dataRequest', (e) => {
+    constructor(el) {
+        this.el = el;
+        this.el.addEventListener('dataRequest', (e) => {
             this.receive(e.detail);
         });
 
-        window.addEventListener('sortRequest', (e) => {
+        this.el.addEventListener('sortRequest', (e) => {
             this.sort(e.detail);
         });
     }
@@ -36,7 +37,7 @@ class Data {
                 const dataReceivedEvent = new CustomEvent('dataReceived', {
                     detail: {data}
                 });
-                window.dispatchEvent(dataReceivedEvent);
+                this.el.dispatchEvent(dataReceivedEvent);
             });
     }
 
@@ -64,8 +65,6 @@ class Data {
         const arraySortedEvent = new CustomEvent('arraySorted', {
             detail: { sortedArray }
         });
-        window.dispatchEvent(arraySortedEvent);
+        this.el.dispatchEvent(arraySortedEvent);
     }
 }
-
-new Data();
