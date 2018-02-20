@@ -1,13 +1,24 @@
 class Data {
+    constructor() {
+        window.addEventListener('dataRequest', (e) => {
+            this.receive(e.detail);
+        });
+
+        window.addEventListener('sortRequest', (e) => {
+            this.sort(e.detail);
+        });
+    }
+
     receive(usersAmount) {
         const amount = usersAmount > 1 ? usersAmount : 1;
         const url = `https://randomuser.me/api/?nat=US&results=${amount}`;
+        let data = [];
 
         fetch(url)
             .then(res => res.json())
             .then(data => data.results)
             .then(results => {
-                table.users = results.map((user, index) => {
+                data = results.map((user, index) => {
                     return {
                         id: index,
                         first: user.name.first,
@@ -21,15 +32,20 @@ class Data {
                     }
                 });
             })
-            .then(() => table.create());
+            .then(() => {
+                const dataReceivedEvent = new CustomEvent('dataReceived', {
+                    detail: {data}
+                });
+                window.dispatchEvent(dataReceivedEvent);
+            });
     }
 
     sort(obj) {
-        return obj.sortableArray.sort((a, b) => {
-            let aValue = a[obj.index];
-            let bValue = b[obj.index];
+        const sortedArray = obj.sortableArray.sort((a, b) => {
+            let aValue = a[obj.sortBy];
+            let bValue = b[obj.sortBy];
 
-            if (obj.sortBy === 'number') {
+            if (obj.sortBy === 'phone') {
                 aValue = helpers.getNumberFromString(aValue);
                 bValue = helpers.getNumberFromString(bValue);
             }
@@ -44,7 +60,12 @@ class Data {
 
             return 0;
         });
+
+        const arraySortedEvent = new CustomEvent('arraySorted', {
+            detail: { sortedArray }
+        });
+        window.dispatchEvent(arraySortedEvent);
     }
 }
 
-const tableData = new Data();
+new Data();

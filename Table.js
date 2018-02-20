@@ -4,8 +4,21 @@ class Table {
             throw new Error('type of argument must be a number');
         }
         this.el = null;
-        this.users = [];
-        tableData.receive(rowsAmount);
+
+        const dataRequestEvent = new CustomEvent('dataRequest', {
+            detail: rowsAmount
+        });
+        window.dispatchEvent(dataRequestEvent);
+
+        window.addEventListener('dataReceived', (e) => {
+            this.users = e.detail.data;
+            this.create();
+        });
+
+        window.addEventListener('arraySorted', (e) => {
+            this.update(this.el, e.detail.sortedArray);
+        });
+
     }
 
     create() {
@@ -15,8 +28,6 @@ class Table {
         table.innerHTML += this.assembleBody(this.users);
 
         document.body.appendChild(table);
-
-        console.log('table created');
 
         this.el = table;
         this.clickHandler();
@@ -36,13 +47,8 @@ class Table {
         let tableHead = '';
 
         for (let key in usersArray[0]) {
-            let type = 'string';
-
-            if (key === 'phone') {
-                type = 'number';
-            }
             if (usersArray[0].hasOwnProperty(key)) {
-                tableHead += `<th data-sort-by=${type}>${helpers.capitalizeStr(key)}</th>`;
+                tableHead += `<th>${helpers.capitalizeStr(key)}</th>`;
             }
         }
 
@@ -87,16 +93,16 @@ class Table {
                 e.target.classList.add('active--revert');
             }
 
-            const sortBy = e.target.getAttribute('data-sort-by').toLowerCase();
-            const index = e.target.innerText.toLowerCase();
+            const sortBy = e.target.innerText.toLowerCase();
 
-            this.update(this.el, tableData.sort({
-                table: this.el,
-                sortableArray: this.users,
-                sortBy,
-                index,
-                direction
-            }));
+            const sortRequestEvent = new CustomEvent('sortRequest', {
+                detail: {
+                    sortableArray: this.users,
+                    sortBy,
+                    direction
+                }
+            });
+            window.dispatchEvent(sortRequestEvent);
         });
     }
 
@@ -110,5 +116,3 @@ class Table {
 }
 
 const table = new Table(10);
-
-console.log(`new Table(number)`);
