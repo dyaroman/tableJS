@@ -105,10 +105,11 @@ class Table {
     }
 
     destroy() {
-        const table = document.querySelector('table');
-        if (table) {
-            table.remove();
-            console.log('table deleted');
+        if (this.el) {
+            this.el.remove();
+            this.el = null;
+        } else {
+            throw new Error('already removed');
         }
     }
 }

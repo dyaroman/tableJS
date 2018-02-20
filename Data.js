@@ -63,7 +63,7 @@ class Data {
         });
 
         const arraySortedEvent = new CustomEvent('arraySorted', {
-            detail: { sortedArray }
+            detail: {sortedArray}
         });
         this.el.dispatchEvent(arraySortedEvent);
     }
