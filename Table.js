@@ -3,16 +3,12 @@ class Table {
         if (typeof rowsAmount !== 'number') {
             throw new Error('type of argument must be a number');
         }
-        this.isAlive = false;
         this.el = null;
         this.users = [];
         tableData.receive(rowsAmount);
     }
 
     create() {
-        if (this.isAlive) {
-            this.destroy();
-        }
         const table = document.createElement('table');
 
         table.innerHTML += this.assembleHead(this.users);
@@ -22,25 +18,17 @@ class Table {
 
         console.log('table created');
 
-        this.isAlive = true;
         this.el = table;
         this.clickHandler();
     }
 
     update(tableEl, newData) {
-        if (!this.isAlive) {
-            throw new Error(`can not update table, table alive status = ${this.isAlive}`);
-        }
-
         const newTbody = document.createElement('tbody');
 
-        // remove table body
         tableEl.querySelector('tbody').remove();
 
-        // fill table body with sorted rows
         newTbody.innerHTML += this.assembleBody(newData);
 
-        // append new table body to the table
         tableEl.appendChild(newTbody);
     }
 
@@ -117,7 +105,6 @@ class Table {
         if (table) {
             table.remove();
             console.log('table deleted');
-            this.isAlive = false;
         }
     }
 }

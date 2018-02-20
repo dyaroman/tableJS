@@ -2,6 +2,10 @@ table {
     border-collapse: collapse;
 }
 
+table + table {
+    margin-top: 20px;
+}
+
 tr:nth-child(even) {
     background-color: #f2f2f2;
 }
